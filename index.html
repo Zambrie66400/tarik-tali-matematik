@@ -669,7 +669,9 @@
       operation: 'mixed',
       gameActive: false,
       totalWinsLeft: 0,
-      totalWinsRight: 0
+      totalWinsRight: 0,
+      activePlayerLeftName: '',
+      activePlayerRightName: ''
     };
 
     async function onConfigChange(config) {
@@ -753,6 +755,10 @@
       const nameLeft = document.getElementById('nameLeft').value.trim() || 'Pemain Kiri';
       const nameRight = document.getElementById('nameRight').value.trim() || 'Pemain Kanan';
       
+      // Store the active player names in game state
+      gameState.activePlayerLeftName = nameLeft;
+      gameState.activePlayerRightName = nameRight;
+      
       document.getElementById('playerLeftName').textContent = nameLeft;
       document.getElementById('playerRightName').textContent = nameRight;
       document.getElementById('labelLeft').textContent = nameLeft;
@@ -792,11 +798,10 @@
     }
 
     function updateTurnIndicator() {
-      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
       const indicator = document.getElementById('turnIndicator');
       const playerName = gameState.currentTurn === 'left' 
-        ? (config.player_left_name || defaultConfig.player_left_name)
-        : (config.player_right_name || defaultConfig.player_right_name);
+        ? gameState.activePlayerLeftName
+        : gameState.activePlayerRightName;
       indicator.textContent = `Giliran: ${playerName}`;
     }
 
@@ -983,14 +988,15 @@
     }
     
     function endGame() {
-      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
       gameState.gameActive = false;
       clearInterval(gameState.timerInterval);
       
+      // Use the stored active player names
+      const leftPlayerName = gameState.activePlayerLeftName;
+      const rightPlayerName = gameState.activePlayerRightName;
+      
       // Determine winner based on marker position
-      const winner = gameState.markerPosition <= 0 
-        ? (config.player_left_name || defaultConfig.player_left_name)
-        : (config.player_right_name || defaultConfig.player_right_name);
+      const winner = gameState.markerPosition <= 0 ? leftPlayerName : rightPlayerName;
       
       // Update total wins
       if (gameState.markerPosition <= 0) {
@@ -1000,8 +1006,8 @@
       }
       
       // Update popup with player names and win counts
-      document.getElementById('popupNameLeft').textContent = config.player_left_name || defaultConfig.player_left_name;
-      document.getElementById('popupNameRight').textContent = config.player_right_name || defaultConfig.player_right_name;
+      document.getElementById('popupNameLeft').textContent = leftPlayerName;
+      document.getElementById('popupNameRight').textContent = rightPlayerName;
       document.getElementById('popupWinsLeft').textContent = gameState.totalWinsLeft;
       document.getElementById('popupWinsRight').textContent = gameState.totalWinsRight;
       
@@ -1014,12 +1020,11 @@
     function restartGame() {
       document.getElementById('gameOverScreen').classList.remove('show');
       
-      // Update win record table
-      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
+      // Update win record table with stored active names
       document.getElementById('recordWinsLeft').textContent = gameState.totalWinsLeft;
       document.getElementById('recordWinsRight').textContent = gameState.totalWinsRight;
-      document.getElementById('recordNameLeft').textContent = config.player_left_name || defaultConfig.player_left_name;
-      document.getElementById('recordNameRight').textContent = config.player_right_name || defaultConfig.player_right_name;
+      document.getElementById('recordNameLeft').textContent = gameState.activePlayerLeftName;
+      document.getElementById('recordNameRight').textContent = gameState.activePlayerRightName;
       document.getElementById('winRecordTable').style.display = 'block';
       
       gameState.markerPosition = 50;
@@ -1047,6 +1052,8 @@
       gameState.gameActive = false;
       gameState.totalWinsLeft = 0;
       gameState.totalWinsRight = 0;
+      gameState.activePlayerLeftName = '';
+      gameState.activePlayerRightName = '';
       document.getElementById('winRecordTable').style.display = 'none';
     }
 
@@ -1066,5 +1073,5 @@
       }
     });
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a45d4c5b3bbdce2',t:'MTc2NDEyMjgzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a467c6f027f24ba',t:'MTc2NDEyOTcwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
